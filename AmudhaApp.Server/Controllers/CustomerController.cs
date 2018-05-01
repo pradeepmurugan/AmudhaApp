@@ -51,7 +51,7 @@ namespace AmudhaApp.Server.Controllers
         {
             try
             {
-                Customer result =  await Task.FromResult(CustomerDatabase.FindById(id));
+                var result =  await Task.FromResult(CustomerDatabase.FindById(id));
                 if (result == null)
                 {
                     return new NotFoundResult();

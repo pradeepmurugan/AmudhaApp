@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
+using AmudhaApp.Library.Models;
 using LiteDB;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-/*
+
 namespace AmudhaApp.Server.Controllers
 {
     [Produces("application/json")]
@@ -13,39 +15,113 @@ namespace AmudhaApp.Server.Controllers
     public class ProductController : Controller
     {
         private LiteDatabase _db;
-
-       
-        [HttpGet]
-        [Route("api/products")]
-        public IEnumerable<string> Get()
+        private LiteCollection<Product> ProductDatabase;
+        public ProductController(LiteDatabase db)
         {
-            return new string[] { "value1", "value2" };
+            _db = db;
+            ProductDatabase = _db.GetCollection<Product>("products");
         }
 
-       
-        [HttpGet("{id}", Name = "Get")]
-        public string Get(int id)
+        [HttpGet("products", Name ="GetProducts")]
+        public async Task <IActionResult> GetAllProducts()
         {
-            return "value";
+            try
+            {
+                var result = await Task.FromResult(ProductDatabase.FindAll());
+                if(result.Any())
+                {
+                    return Ok(result);
+                }
+                else
+                {
+                    return new NoContentResult();
+                }
+            }
+            catch (Exception e)
+            {
+                Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+                return new JsonResult(new { message = $"Query failed with error code {e.HResult.ToString()}." });
+            }
         }
-        
 
-        [HttpPost]
-        public void Post([FromBody]string value)
+        [HttpGet("product/{id:guid}", Name = "GetProduct")]
+        public async Task<IActionResult> GetProductByID([FromRoute]Guid id)
         {
+            try
+            {
+                var result = await Task.FromResult(ProductDatabase.FindById(id));
+                if (result == null)
+                {
+                    return new NotFoundResult();
+                }
+                else
+                {
+                    return Ok(result);
+                }
+            }
+            catch (Exception e)
+            {
+                Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+                return new JsonResult(new { message = $"Query failed with error code {e.HResult.ToString()}." });
+            }
         }
-        
-        
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody]string value)
+
+
+        [HttpPost("product", Name = "PostProduct")]
+        public async Task<IActionResult>CreateProduct([FromBody]Product product)
         {
+            product.Id = Guid.NewGuid();
+            product.UpdatedAt = DateTimeOffset.Now;
+            product.Price.UpdatedAt = DateTimeOffset.Now;
+            try
+            {
+                await Task.FromResult(ProductDatabase.Insert(product));
+                return CreatedAtRoute("PostProduct", new { id = product.Id }, product);
+            }
+
+            catch (Exception e)
+            {
+                Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+                return new JsonResult(new { message = $"Query failed with error code {e.HResult.ToString()}." });
+            }
         }
-        
-        
-        [HttpDelete("{id}")]
-        public void Delete(int id)
+
+        [HttpPut("product/{id:guid}", Name = "PutProduct")]
+        public async Task<IActionResult> CreateOrUpdateProduct([FromRoute]Guid id, [FromBody]Product product)
         {
+            if (id == default(Guid))
+            {
+                return new BadRequestResult();
+            }
+            product.UpdatedAt = DateTimeOffset.Now;
+
+            try
+            {
+                await Task.FromResult(ProductDatabase.Upsert(product));
+                return CreatedAtRoute("GetProduct", new { id = product.Id }, product);
+            }
+
+            catch (Exception e)
+            {
+                Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+                return new JsonResult(new { message = $"Query failed with error code {e.HResult.ToString()}." });
+            }
+        }
+
+        [HttpDelete("product/{id:guid}", Name = "DeleteProduct")]
+        public async Task<IActionResult> DeleteProduct([FromRoute]Guid id)
+        {
+            try
+            {
+                await Task.FromResult(ProductDatabase.Delete(id));
+                return Ok();
+            }
+
+            catch (Exception e)
+            {
+                Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+                return new JsonResult(new { message = $"Query failed with error code {e.HResult.ToString()}." });
+            }
         }
     }
 }
-*/

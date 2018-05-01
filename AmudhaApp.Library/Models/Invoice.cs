@@ -16,15 +16,32 @@ namespace AmudhaApp.Library.Models
         [JsonProperty(PropertyName = "invoiceNumber")]
         public String InvoiceNumber { get; set; }
 
+        [JsonProperty(PropertyName = "invoiceDate")]
+        public String InvoiceDate { get; set; }
+
         [JsonProperty(PropertyName = "productList")]
         public List<KeyValuePair<Product,int>> ProductList { get; set; }
 
         [JsonProperty(PropertyName = "customer")]
         public Customer Customer { get; set; }
 
-        public double TotalAmount () => ProductList.Sum(x => x.Key.Price.CalculatedPrice);
+        [JsonProperty(PropertyName = "quantity")]
+        public InventoryItem Quantity { get; set; }
 
-        public double SubtotalAmount() => ProductList.Sum(x => x.Key.Price.BasePrice);
+        [JsonProperty(PropertyName = "otherCharges")]
+        public double OtherCharges { get; set; }
+
+        [JsonProperty(PropertyName = "totalAmount")]
+        public double TotalAmount => ProductList.Sum(x => x.Key.Price.CalculatedPrice);
+
+        [JsonProperty(PropertyName = "finalAmount")]
+        public double FinalAmount => TotalAmount + OtherCharges;
+
+        [JsonProperty(PropertyName = "subtotalAmount")]
+        public double SubtotalAmount => ProductList.Sum(x => x.Key.Price.BasePrice);
+
+        [JsonProperty(PropertyName = "updatedAt")]
+        public DateTimeOffset UpdatedAt { get; set; }
 
     }
 }
