@@ -9,20 +9,25 @@ namespace AmudhaApp.Library.Models
     [JsonObject(Title = "product")]
     public class Product
     {
+        public Product()
+        {
+
+        }
+
         [JsonProperty(PropertyName = "id"), JsonConverter(typeof(GuidConverter))]
-        public Guid Id { get; set; }
+        public Guid Id { get; set; } = Guid.Empty;
 
         [JsonProperty(PropertyName = "name")]
-        public String Name { get; set; }
+        public String Name { get; set; } = "";
 
         [JsonProperty(PropertyName = "defaultPrice")]
-        public ProductPrice Price { get; set; }
+        public ProductPrice Price { get; set; } = new ProductPrice();
 
         [JsonProperty(PropertyName = "hsn")]
-        public String Hsn { get; set; }
+        public String Hsn { get; set; } = "";
 
         [JsonProperty(PropertyName = "nickname")]
-        public String Nickname { get; set; }
+        public String Nickname { get; set; } = "";
 
         [JsonProperty(PropertyName = "updatedAt")]
         public DateTimeOffset UpdatedAt { get; set; }

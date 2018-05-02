@@ -10,38 +10,28 @@ namespace AmudhaApp.Library.Models
     [JsonObject(Title = "invoice")]
     public class Invoice
     {
+
         [JsonProperty(PropertyName = "id"), JsonConverter(typeof(GuidConverter))]
-        public Guid Id { get; set; }
+        public Guid Id { get; set; } = Guid.Empty;
 
-        [JsonProperty(PropertyName = "invoiceNumber")]
-        public String InvoiceNumber { get; set; }
+        [JsonProperty(PropertyName = "number")]
+        public long Number { get; set; } = 0;
 
-        [JsonProperty(PropertyName = "invoiceDate")]
-        public String InvoiceDate { get; set; }
+        [JsonProperty(PropertyName = "date")]
+        public DateTimeOffset Date { get; set; }
 
         [JsonProperty(PropertyName = "productList")]
-        public List<KeyValuePair<Product,int>> ProductList { get; set; }
+        public List<ProductsListItem> ProductsList { get; set; } = new List<ProductsListItem>();
 
         [JsonProperty(PropertyName = "customer")]
-        public Customer Customer { get; set; }
-
-        [JsonProperty(PropertyName = "quantity")]
-        public InventoryItem Quantity { get; set; }
-
-        [JsonProperty(PropertyName = "otherCharges")]
-        public double OtherCharges { get; set; }
-
-        [JsonProperty(PropertyName = "totalAmount")]
-        public double TotalAmount => ProductList.Sum(x => x.Key.Price.CalculatedPrice);
-
-        [JsonProperty(PropertyName = "finalAmount")]
-        public double FinalAmount => TotalAmount + OtherCharges;
-
-        [JsonProperty(PropertyName = "subtotalAmount")]
-        public double SubtotalAmount => ProductList.Sum(x => x.Key.Price.BasePrice);
-
+        public Customer Customer { get; set; } = new Customer();
+        
         [JsonProperty(PropertyName = "updatedAt")]
-        public DateTimeOffset UpdatedAt { get; set; }
+        public DateTimeOffset UpdatedAt { get; set; } 
 
+
+        public double TotalAmount() => ProductsList.Sum(x => x.Product.Price.CalculatedPrice * x.Quantity);
+
+        public double SubtotalAmount() => ProductsList.Sum(x => x.Product.Price.BasePrice * x.Quantity);
     }
 }

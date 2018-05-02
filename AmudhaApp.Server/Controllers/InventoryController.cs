@@ -11,23 +11,23 @@ using Microsoft.AspNetCore.Mvc;
 namespace AmudhaApp.Server.Controllers
 {
     [Produces("application/json")]
-    [Route("api")]
-    public class CustomerController : Controller
+    [Route("api/inventory")]
+    public class InventoryController : Controller
     {
         private LiteDatabase _db;
-        private LiteCollection<Customer> CustomerDatabase;
-        public CustomerController(LiteDatabase db)
+        private LiteCollection<InventoryItem> InventoryDatabase;
+        public InventoryController(LiteDatabase db)
         {
             _db = db;
-            CustomerDatabase = _db.GetCollection<Customer>("Customers");
+            InventoryDatabase = _db.GetCollection<InventoryItem>("Inventory");
         }
 
-        [HttpGet("customers", Name = "GetAllCustomers")]
-        public async Task<IActionResult> GetAllCustomers()
+        [HttpGet("Inventory", Name = "GetAllItems")]
+        public async Task<IActionResult> GetAllItems()
         {
             try
             {
-                var result = await Task.FromResult(CustomerDatabase.FindAll());
+                var result = await Task.FromResult(InventoryDatabase.FindAll());
                 if (result.Any())
                 {
                     return Ok(result);
@@ -37,7 +37,6 @@ namespace AmudhaApp.Server.Controllers
                     return new NoContentResult();
                 }
             }
-
             catch (Exception e)
             {
                 Response.StatusCode = (int)HttpStatusCode.InternalServerError;
@@ -45,24 +44,21 @@ namespace AmudhaApp.Server.Controllers
             }
         }
 
-
-        [HttpGet("customer/{id:guid}", Name = "GetCustomer")]
-        public async Task<IActionResult> GetCustomerById([FromRoute]Guid id)
+        [HttpGet("item/{id:guid}", Name = "GetItem")]
+        public async Task<IActionResult> GetItemByProductID([FromRoute]Guid productId)
         {
             try
             {
-                var result =  await Task.FromResult(CustomerDatabase.FindById(id));
+                var result = await Task.FromResult(InventoryDatabase.FindById(productId));
                 if (result == null)
                 {
                     return new NotFoundResult();
-                    
                 }
                 else
                 {
                     return Ok(result);
                 }
             }
-
             catch (Exception e)
             {
                 Response.StatusCode = (int)HttpStatusCode.InternalServerError;
@@ -70,15 +66,15 @@ namespace AmudhaApp.Server.Controllers
             }
         }
 
-        [HttpPost("customer", Name = "PostCustomer")]
-        public async Task<IActionResult> CreateCustomer([FromBody]Customer customer)
+
+        [HttpPost("item", Name = "PostItem")]
+        public async Task<IActionResult> CreateInventory([FromBody]InventoryItem item)
         {
-            customer.Id = Guid.NewGuid();
-            customer.UpdatedAt = DateTimeOffset.Now;
             try
             {
-                await Task.FromResult(CustomerDatabase.Insert(customer));
-                return CreatedAtRoute("GetCustomer", new { id = customer.Id }, customer);
+                item.UpdatedAt = DateTimeOffset.Now;
+                await Task.FromResult(InventoryDatabase.Insert(item));
+                return CreatedAtRoute("GetItem", new { id = item.Id }, item);
             }
 
             catch (Exception e)
@@ -88,19 +84,19 @@ namespace AmudhaApp.Server.Controllers
             }
         }
 
-        [HttpPut("customer/{id:guid}", Name = "PutCustomer")]
-        public async Task<IActionResult> CreateOrUpdateCustomer([FromRoute]Guid id, [FromBody]Customer customer)
+        [HttpPut("item/{id:guid}", Name = "PutItem")]
+        public async Task<IActionResult> CreateOrUpdateInventory([FromRoute]Guid productId, [FromBody]InventoryItem item)
         {
-            if (id == default(Guid))
+            if (productId == default(Guid))
             {
                 return new BadRequestResult();
             }
-            customer.UpdatedAt = DateTimeOffset.Now;
+            item.UpdatedAt = DateTimeOffset.Now;
 
             try
             {
-                await Task.FromResult(CustomerDatabase.Upsert(customer));
-                return CreatedAtRoute("GetCustomer", new { id = customer.Id }, customer);
+                await Task.FromResult(InventoryDatabase.Upsert(item));
+                return CreatedAtRoute("GetItem", new { id = item.Id }, item);
             }
 
             catch (Exception e)
@@ -110,12 +106,12 @@ namespace AmudhaApp.Server.Controllers
             }
         }
 
-        [HttpDelete("customer/{id:guid}", Name = "DeleteCustomer")]
-        public async Task<IActionResult> DeleteCustomer([FromRoute]Guid id)
+        [HttpDelete("item/{id:guid}", Name = "DeleteItem")]
+        public async Task<IActionResult> DeleteItemByProductId([FromRoute]Guid productId)
         {
             try
             {
-                await Task.FromResult(CustomerDatabase.Delete(id));
+                await Task.FromResult(InventoryDatabase.Delete(productId));
                 return Ok();
             }
 

@@ -20,9 +20,36 @@ namespace AmudhaApp.Server.Controllers
         {
             _db = db;
             InvoiceDatabase = _db.GetCollection<Invoice>("invoices");
+            var invoice = new Invoice();
+            var deliveryChargePrice = new ProductPrice
+            {
+                CalculatedPrice = 100
+            };
+            var deliveryCharge = new Product
+            {
+                Name = "Delivery Charge",
+                Nickname = "DelCharge",
+                UpdatedAt = DateTimeOffset.Now,
+                Price = deliveryChargePrice
+            };
+            var pipePrice = new ProductPrice
+            {
+                CalculatedPrice = 200
+            };
+            var pipe = new Product
+            {
+                Name = "Delivery Charge",
+                Nickname = "DelCharge",
+                UpdatedAt = DateTimeOffset.Now,
+                Price = pipePrice
+            };
+            invoice.ProductsList = new List<ProductsListItem>();
+            invoice.ProductsList.Add(new ProductsListItem(deliveryCharge, 1));
+            invoice.ProductsList.Add(new ProductsListItem(pipe, 20));
+            InvoiceDatabase.Insert(invoice);
         }
 
-        [HttpGet("invoices", Name = "Getinvoices")]
+        [HttpGet("invoices", Name = "GetAllInvoices")]
         public async Task<IActionResult> GetAllInvoices()
         {
             try
@@ -45,7 +72,7 @@ namespace AmudhaApp.Server.Controllers
         }
 
         [HttpGet("invoice/{id:guid}", Name = "GetInvoice")]
-        public async Task<IActionResult> GetProductByID([FromRoute]Guid id)
+        public async Task<IActionResult> GetInvoiceByID([FromRoute]Guid id)
         {
             try
             {
@@ -70,12 +97,12 @@ namespace AmudhaApp.Server.Controllers
         [HttpPost("invoice", Name = "PostInvoice")]
         public async Task<IActionResult> CreateInvoice([FromBody]Invoice invoice)
         {
-            invoice.Id = Guid.NewGuid();
-            invoice.UpdatedAt = DateTimeOffset.Now;
             try
             {
+                invoice.Id = Guid.NewGuid();
+                invoice.UpdatedAt = DateTimeOffset.Now;
                 await Task.FromResult(InvoiceDatabase.Insert(invoice));
-                return CreatedAtRoute("PostInvoice", new { id = invoice.Id }, invoice);
+                return CreatedAtRoute("GetInvoice", new { id = invoice.Id }, invoice);
             }
 
             catch (Exception e)
@@ -86,18 +113,18 @@ namespace AmudhaApp.Server.Controllers
         }
 
         [HttpPut("invoice/{id:guid}", Name = "PutInvoice")]
-        public async Task<IActionResult> CreateOrUpdateProduct([FromRoute]Guid id, [FromBody]Invoice invoice)
+        public async Task<IActionResult> CreateOrUpdateInvoice([FromRoute]Guid id, [FromBody]Invoice invoice)
         {
-            if (id == default(Guid))
-            {
-                return new BadRequestResult();
-            }
-            invoice.UpdatedAt = DateTimeOffset.Now;
-
             try
             {
+                if (id == default(Guid))
+                {
+                    return new BadRequestResult();
+                }
+                invoice.UpdatedAt = DateTimeOffset.Now;
+
                 await Task.FromResult(InvoiceDatabase.Upsert(invoice));
-                return CreatedAtRoute("PutInvoice", new { id = invoice.Id }, invoice);
+                return CreatedAtRoute("GetInvoice", new { id = invoice.Id }, invoice);
             }
 
             catch (Exception e)
@@ -108,7 +135,7 @@ namespace AmudhaApp.Server.Controllers
         }
 
         [HttpDelete("invoice/{id:guid}", Name = "DeleteInvoice")]
-        public async Task<IActionResult> DeleteProduct([FromRoute]Guid id)
+        public async Task<IActionResult> DeleteInvoice([FromRoute]Guid id)
         {
             try
             {

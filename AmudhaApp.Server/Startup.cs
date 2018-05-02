@@ -40,5 +40,10 @@ namespace AmudhaApp.Server
 
             app.UseMvc();
         }
+        public void DeleteDatabase()
+        {
+            //
+        }
+
     }
 }

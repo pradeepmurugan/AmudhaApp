@@ -1,0 +1,27 @@
+ var invoice = new Invoice();
+            var deliveryChargePrice = new ProductPrice
+            {
+                CalculatedPrice = 100
+            };
+            var deliveryCharge = new Product
+            {
+                Name = "Delivery Charge",
+                Nickname = "DelCharge",
+                UpdatedAt = DateTimeOffset.Now,
+                Price = deliveryChargePrice
+            };
+            var pipePrice = new ProductPrice
+            {
+                CalculatedPrice = 200
+            };
+            var pipe = new Product
+            {
+                Name = "Delivery Charge",
+                Nickname = "DelCharge",
+                UpdatedAt = DateTimeOffset.Now,
+                Price = pipePrice
+            };
+            invoice.ProductsList = new List<ProductsListItem>();
+            invoice.ProductsList.Add(new ProductsListItem(deliveryCharge, 1));
+            invoice.ProductsList.Add(new ProductsListItem(pipe, 20));
+            InvoiceDatabase.Insert(invoice);

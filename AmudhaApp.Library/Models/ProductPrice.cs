@@ -8,6 +8,11 @@ namespace AmudhaApp.Library.Models
     [JsonObject(Title = "productPrice")]
     public class ProductPrice
     {
+        public ProductPrice()
+        {
+
+        }
+
         [JsonProperty(PropertyName = "gstRate")]
         public Double GstRate { get; set; }
 
@@ -25,5 +30,10 @@ namespace AmudhaApp.Library.Models
 
         [JsonProperty(PropertyName = "updatedAt")]
         public DateTimeOffset UpdatedAt { get; set; }
+
+        public void CalculatePrice()
+        {
+            CalculatedPrice = (((BasePrice * (1 - (DiscountRate / 100)) * (1 + (GstRate / 100)))));
+        }
     }
 }

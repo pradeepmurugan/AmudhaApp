@@ -22,13 +22,13 @@ namespace AmudhaApp.Server.Controllers
             ProductDatabase = _db.GetCollection<Product>("products");
         }
 
-        [HttpGet("products", Name ="GetProducts")]
-        public async Task <IActionResult> GetAllProducts()
+        [HttpGet("products", Name = "GetAllProducts")]
+        public async Task<IActionResult> GetAllProducts()
         {
             try
             {
                 var result = await Task.FromResult(ProductDatabase.FindAll());
-                if(result.Any())
+                if (result.Any())
                 {
                     return Ok(result);
                 }
@@ -68,15 +68,15 @@ namespace AmudhaApp.Server.Controllers
 
 
         [HttpPost("product", Name = "PostProduct")]
-        public async Task<IActionResult>CreateProduct([FromBody]Product product)
+        public async Task<IActionResult> CreateProduct([FromBody]Product product)
         {
-            product.Id = Guid.NewGuid();
-            product.UpdatedAt = DateTimeOffset.Now;
-            product.Price.UpdatedAt = DateTimeOffset.Now;
             try
             {
+                product.Id = Guid.NewGuid();
+                product.UpdatedAt = DateTimeOffset.Now;
+                product.Price.UpdatedAt = DateTimeOffset.Now;
                 await Task.FromResult(ProductDatabase.Insert(product));
-                return CreatedAtRoute("PostProduct", new { id = product.Id }, product);
+                return CreatedAtRoute("GetProduct", new { id = product.Id }, product);
             }
 
             catch (Exception e)
@@ -89,14 +89,17 @@ namespace AmudhaApp.Server.Controllers
         [HttpPut("product/{id:guid}", Name = "PutProduct")]
         public async Task<IActionResult> CreateOrUpdateProduct([FromRoute]Guid id, [FromBody]Product product)
         {
-            if (id == default(Guid))
-            {
-                return new BadRequestResult();
-            }
-            product.UpdatedAt = DateTimeOffset.Now;
-
             try
             {
+                if (id == default(Guid))
+                {
+                    return new BadRequestResult();
+                }
+                if(product.Price.UpdatedAt == default(DateTimeOffset))
+                {
+                    product.Price.UpdatedAt = DateTimeOffset.Now;
+                }
+                product.UpdatedAt = DateTimeOffset.Now;
                 await Task.FromResult(ProductDatabase.Upsert(product));
                 return CreatedAtRoute("GetProduct", new { id = product.Id }, product);
             }
