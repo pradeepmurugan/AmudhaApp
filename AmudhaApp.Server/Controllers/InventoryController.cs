@@ -12,7 +12,8 @@ namespace AmudhaApp.Server.Controllers
 {
     [Produces("application/json")]
     [Route("api/inventory")]
-    public class InventoryController : Controller
+    [ApiController]
+    public class InventoryController : ControllerBase
     {
         private LiteDatabase _db;
         private LiteCollection<InventoryItem> InventoryDatabase;
@@ -23,7 +24,7 @@ namespace AmudhaApp.Server.Controllers
         }
 
         [HttpGet("Inventory", Name = "GetAllItems")]
-        public async Task<IActionResult> GetAllItems()
+        public async Task<ActionResult<InventoryItem>> GetAllItems()
         {
             try
             {
@@ -45,7 +46,7 @@ namespace AmudhaApp.Server.Controllers
         }
 
         [HttpGet("item/{id:guid}", Name = "GetItem")]
-        public async Task<IActionResult> GetItemByProductID([FromRoute]Guid productId)
+        public async Task<ActionResult<InventoryItem>> GetItemByProductID([FromRoute]Guid productId)
         {
             try
             {
@@ -68,13 +69,13 @@ namespace AmudhaApp.Server.Controllers
 
 
         [HttpPost("item", Name = "PostItem")]
-        public async Task<IActionResult> CreateInventory([FromBody]InventoryItem item)
+        public async Task<ActionResult<InventoryItem>> CreateInventory([FromBody]InventoryItem item)
         {
             try
             {
                 item.UpdatedAt = DateTimeOffset.Now;
                 await Task.FromResult(InventoryDatabase.Insert(item));
-                return CreatedAtRoute("GetItem", new { id = item.Id }, item);
+                return CreatedAtRoute(nameof(GetItemByProductID), new { id = item.Id }, item);
             }
 
             catch (Exception e)
@@ -85,7 +86,7 @@ namespace AmudhaApp.Server.Controllers
         }
 
         [HttpPut("item/{id:guid}", Name = "PutItem")]
-        public async Task<IActionResult> CreateOrUpdateInventory([FromRoute]Guid productId, [FromBody]InventoryItem item)
+        public async Task<ActionResult<InventoryItem>> CreateOrUpdateInventory([FromRoute]Guid productId, [FromBody]InventoryItem item)
         {
             if (productId == default(Guid))
             {
@@ -96,7 +97,7 @@ namespace AmudhaApp.Server.Controllers
             try
             {
                 await Task.FromResult(InventoryDatabase.Upsert(item));
-                return CreatedAtRoute("GetItem", new { id = item.Id }, item);
+                return CreatedAtRoute(nameof(GetItemByProductID), new { id = item.Id }, item);
             }
 
             catch (Exception e)
@@ -107,7 +108,7 @@ namespace AmudhaApp.Server.Controllers
         }
 
         [HttpDelete("item/{id:guid}", Name = "DeleteItem")]
-        public async Task<IActionResult> DeleteItemByProductId([FromRoute]Guid productId)
+        public async Task<ActionResult<InventoryItem>> DeleteItemByProductId([FromRoute]Guid productId)
         {
             try
             {

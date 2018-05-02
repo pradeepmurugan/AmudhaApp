@@ -12,7 +12,8 @@ namespace AmudhaApp.Server.Controllers
 {
     [Produces("application/json")]
     [Route("api")]
-    public class CustomerController : Controller
+    [ApiController]
+    public class CustomerController : ControllerBase
     {
         private LiteDatabase _db;
         private LiteCollection<Customer> CustomerDatabase;
@@ -23,7 +24,7 @@ namespace AmudhaApp.Server.Controllers
         }
 
         [HttpGet("customers", Name = "GetAllCustomers")]
-        public async Task<IActionResult> GetAllCustomers()
+        public async Task<ActionResult<Customer>> GetAllCustomers()
         {
             try
             {
@@ -47,7 +48,7 @@ namespace AmudhaApp.Server.Controllers
 
 
         [HttpGet("customer/{id:guid}", Name = "GetCustomer")]
-        public async Task<IActionResult> GetCustomerById([FromRoute]Guid id)
+        public async Task<ActionResult<Customer>> GetCustomerById([FromRoute]Guid id)
         {
             try
             {
@@ -71,7 +72,7 @@ namespace AmudhaApp.Server.Controllers
         }
 
         [HttpPost("customer", Name = "PostCustomer")]
-        public async Task<IActionResult> CreateCustomer([FromBody]Customer customer)
+        public async Task<ActionResult<Customer>> CreateCustomer([FromBody]Customer customer)
         {
             customer.Id = Guid.NewGuid();
             customer.UpdatedAt = DateTimeOffset.Now;
@@ -89,7 +90,7 @@ namespace AmudhaApp.Server.Controllers
         }
 
         [HttpPut("customer/{id:guid}", Name = "PutCustomer")]
-        public async Task<IActionResult> CreateOrUpdateCustomer([FromRoute]Guid id, [FromBody]Customer customer)
+        public async Task<ActionResult<Customer>> CreateOrUpdateCustomer([FromRoute]Guid id, [FromBody]Customer customer)
         {
             if (id == default(Guid))
             {
@@ -111,7 +112,7 @@ namespace AmudhaApp.Server.Controllers
         }
 
         [HttpDelete("customer/{id:guid}", Name = "DeleteCustomer")]
-        public async Task<IActionResult> DeleteCustomer([FromRoute]Guid id)
+        public async Task<ActionResult<Customer>> DeleteCustomer([FromRoute]Guid id)
         {
             try
             {

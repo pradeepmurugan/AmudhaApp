@@ -12,7 +12,8 @@ namespace AmudhaApp.Server.Controllers
 {
     [Produces("application/json")]
     [Route("api")]
-    public class ProductController : Controller
+    [ApiController]
+    public class ProductController : ControllerBase
     {
         private LiteDatabase _db;
         private LiteCollection<Product> ProductDatabase;
