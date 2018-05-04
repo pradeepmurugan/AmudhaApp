@@ -35,5 +35,10 @@ namespace AmudhaApp.Library.Models
         [JsonProperty(PropertyName = "updatedAt")]
         public DateTimeOffset UpdatedAt { get; set; }
 
+        [JsonProperty(PropertyName = "createdAt")]
+        public DateTimeOffset CreatedAt { get; set; }
+
+        [JsonProperty(PropertyName = "details")]
+        public string Details { get; set; }
     }
 }

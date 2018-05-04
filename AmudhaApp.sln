@@ -7,7 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AmudhaApp.Server", "AmudhaA
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AmudhaApp.Library", "AmudhaApp.Library\AmudhaApp.Library.csproj", "{3FA565CF-3CED-4B22-9BC6-FC9847DE4A5F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AmudhaApp.SPA", "AmudhaApp.SPA\AmudhaApp.SPA.csproj", "{7D9DF366-DE9C-476D-B9B0-56B955224265}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AmudhaApp.SPA", "AmudhaApp.SPA\AmudhaApp.SPA.csproj", "{64004F74-4628-4B0D-9B58-4C57CEC1622F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -23,10 +23,10 @@ Global
 		{3FA565CF-3CED-4B22-9BC6-FC9847DE4A5F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3FA565CF-3CED-4B22-9BC6-FC9847DE4A5F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3FA565CF-3CED-4B22-9BC6-FC9847DE4A5F}.Release|Any CPU.Build.0 = Release|Any CPU
-		{7D9DF366-DE9C-476D-B9B0-56B955224265}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{7D9DF366-DE9C-476D-B9B0-56B955224265}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{7D9DF366-DE9C-476D-B9B0-56B955224265}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{7D9DF366-DE9C-476D-B9B0-56B955224265}.Release|Any CPU.Build.0 = Release|Any CPU
+		{64004F74-4628-4B0D-9B58-4C57CEC1622F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{64004F74-4628-4B0D-9B58-4C57CEC1622F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{64004F74-4628-4B0D-9B58-4C57CEC1622F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{64004F74-4628-4B0D-9B58-4C57CEC1622F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

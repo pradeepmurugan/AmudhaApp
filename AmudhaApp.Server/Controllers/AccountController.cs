@@ -1,34 +1,34 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
 using System.Threading.Tasks;
-using AmudhaApp.Library.Models;
 using LiteDB;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using AmudhaApp.Library.Models;
+using System.Net;
 
 namespace AmudhaApp.Server.Controllers
 {
     [Produces("application/json")]
     [Route("api")]
     [ApiController]
-    public class CustomerController : ControllerBase
+    public class AccountController : ControllerBase
     {
         private LiteDatabase _db;
-        private LiteCollection<Customer> CustomerDatabase;
-        public CustomerController(LiteDatabase db)
+        private LiteCollection<Account> AccountDatabase;
+        public AccountController(LiteDatabase db)
         {
             _db = db;
-            CustomerDatabase = _db.GetCollection<Customer>("customers");
+            AccountDatabase = _db.GetCollection<Account>("acccounts");
         }
 
-        [HttpGet("customers", Name = "GetAllCustomers")]
-        public async Task<ActionResult<Customer>> GetAllCustomers()
+        [HttpGet("accounts", Name = "GetAllAccounts")]
+        public async Task<ActionResult<Account>> GetAllAccounts()
         {
             try
             {
-                var result = await Task.FromResult(CustomerDatabase.FindAll());
+                var result = await Task.FromResult(AccountDatabase.FindAll());
                 if (result.Any())
                 {
                     return Ok(result);
@@ -38,7 +38,6 @@ namespace AmudhaApp.Server.Controllers
                     return new NoContentResult();
                 }
             }
-
             catch (Exception e)
             {
                 Response.StatusCode = (int)HttpStatusCode.InternalServerError;
@@ -46,24 +45,21 @@ namespace AmudhaApp.Server.Controllers
             }
         }
 
-
-        [HttpGet("customer/{id:guid}", Name = "GetCustomer")]
-        public async Task<ActionResult<Customer>> GetCustomerById([FromRoute]Guid id)
+        [HttpGet("account/{id:guid}", Name = "GetAccount")]
+        public async Task<ActionResult<Account>> GetAccountByCustomerID([FromRoute]Guid customerId)
         {
             try
             {
-                var result =  await Task.FromResult(CustomerDatabase.FindById(id));
+                var result = await Task.FromResult(AccountDatabase.FindById(customerId));
                 if (result == null)
                 {
                     return new NotFoundResult();
-                    
                 }
                 else
                 {
                     return Ok(result);
                 }
             }
-
             catch (Exception e)
             {
                 Response.StatusCode = (int)HttpStatusCode.InternalServerError;
@@ -71,37 +67,15 @@ namespace AmudhaApp.Server.Controllers
             }
         }
 
-        [HttpPost("customer", Name = "PostCustomer")]
-        public async Task<ActionResult<Customer>> CreateCustomer([FromBody]Customer customer)
+
+        [HttpPost("account", Name = "PostAccount")]
+        public async Task<ActionResult<Account>> CreateAccount([FromBody]Account account)
         {
-            customer.Id = Guid.NewGuid();
-            customer.UpdatedAt = DateTimeOffset.Now;
             try
             {
-                await Task.FromResult(CustomerDatabase.Insert(customer));
-                return CreatedAtRoute("GetCustomer", new { id = customer.Id }, customer);
-            }
-
-            catch (Exception e)
-            {
-                Response.StatusCode = (int)HttpStatusCode.InternalServerError;
-                return new JsonResult(new { message = $"Query failed with error code {e.HResult.ToString()}." });
-            }
-        }
-
-        [HttpPut("customer/{id:guid}", Name = "PutCustomer")]
-        public async Task<ActionResult<Customer>> CreateOrUpdateCustomer([FromRoute]Guid id, [FromBody]Customer customer)
-        {
-            if (id == default(Guid))
-            {
-                return new BadRequestResult();
-            }
-            customer.UpdatedAt = DateTimeOffset.Now;
-
-            try
-            {
-                await Task.FromResult(CustomerDatabase.Upsert(customer));
-                return CreatedAtRoute("GetCustomer", new { id = customer.Id }, customer);
+                account.UpdatedAt = DateTimeOffset.Now;
+                await Task.FromResult(AccountDatabase.Insert(account));
+                return CreatedAtRoute(nameof(GetAccountByCustomerID),  account.Customer.Id);
             }
 
             catch (Exception e)
@@ -111,12 +85,33 @@ namespace AmudhaApp.Server.Controllers
             }
         }
 
-        [HttpDelete("customer/{id:guid}", Name = "DeleteCustomer")]
-        public async Task<ActionResult<Customer>> DeleteCustomer([FromRoute]Guid id)
+        [HttpPut("account/{id:guid}", Name = "PutAccount")]
+        public async Task<ActionResult<Account>> CreateOrUpdateAccount([FromRoute]Guid customerId, [FromBody]Account account)
         {
             try
             {
-                await Task.FromResult(CustomerDatabase.Delete(id));
+                if (customerId == default(Guid) || account.Customer.Id == default(Guid) || account.Customer.Id != account.Id)
+                {
+                    return new BadRequestResult();
+                }
+                account.UpdatedAt = DateTimeOffset.Now;
+                await Task.FromResult(AccountDatabase.Upsert(account));
+                return CreatedAtRoute(nameof(GetAccountByCustomerID), account.Id);
+            }
+
+            catch (Exception e)
+            {
+                Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+                return new JsonResult(new { message = $"Query failed with error code {e.HResult.ToString()}." });
+            }
+        }
+
+        [HttpDelete("account/{id:guid}", Name = "DeleteAccount")]
+        public async Task<ActionResult<InventoryItem>> DeleteAccountByProductId([FromRoute]Guid customerId)
+        {
+            try
+            {
+                await Task.FromResult(AccountDatabase.Delete(customerId));
                 return Ok();
             }
 

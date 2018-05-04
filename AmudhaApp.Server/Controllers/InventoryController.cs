@@ -20,10 +20,10 @@ namespace AmudhaApp.Server.Controllers
         public InventoryController(LiteDatabase db)
         {
             _db = db;
-            InventoryDatabase = _db.GetCollection<InventoryItem>("Inventory");
+            InventoryDatabase = _db.GetCollection<InventoryItem>("inventory");
         }
 
-        [HttpGet("Inventory", Name = "GetAllItems")]
+        [HttpGet("items", Name = "GetAllItems")]
         public async Task<ActionResult<InventoryItem>> GetAllItems()
         {
             try

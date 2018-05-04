@@ -20,18 +20,20 @@ namespace AmudhaApp.Library.Models
         [JsonProperty(PropertyName = "date")]
         public DateTimeOffset Date { get; set; }
 
-        [JsonProperty(PropertyName = "productList")]
-        public List<ProductsListItem> ProductsList { get; set; } = new List<ProductsListItem>();
+        [JsonProperty(PropertyName = "product")]
+        public List<ProductsListItem> Products { get; set; } = new List<ProductsListItem>();
 
         [JsonProperty(PropertyName = "customer")]
         public Customer Customer { get; set; } = new Customer();
-        
-        [JsonProperty(PropertyName = "updatedAt")]
-        public DateTimeOffset UpdatedAt { get; set; } 
 
+        [JsonProperty(PropertyName = "createdAt")]
+        public DateTimeOffset CreatedAt { get; set; }
 
-        public double TotalAmount() => ProductsList.Sum(x => x.Product.Price.CalculatedPrice * x.Quantity);
+        [JsonProperty(PropertyName = "details")]
+        public Boolean Details { get; set; }
 
-        public double SubtotalAmount() => ProductsList.Sum(x => x.Product.Price.BasePrice * x.Quantity);
+        public double TotalAmount() => Products.Sum(x => x.Product.Price.CalculatedPrice * x.Quantity);
+
+        public double SubtotalAmount() => Products.Sum(x => x.Product.Price.BasePrice * x.Quantity);
     }
 }

@@ -11,7 +11,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace AmudhaApp.Server.Controllers
 {
     [Produces("application/json")]
-    [Route("api")]
+    [Route("api/inventory")]
     [ApiController]
     public class ProductController : ControllerBase
     {

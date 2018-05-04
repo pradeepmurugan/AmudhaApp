@@ -11,7 +11,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace AmudhaApp.Server.Controllers
 {
     [Produces("application/json")]
-    [Route("api")]
+    [Route("api/billing")]
     [ApiController]
     public class InvoiceController : ControllerBase
     {
@@ -44,9 +44,8 @@ namespace AmudhaApp.Server.Controllers
                 UpdatedAt = DateTimeOffset.Now,
                 Price = pipePrice
             };
-            invoice.ProductsList = new List<ProductsListItem>();
-            invoice.ProductsList.Add(new ProductsListItem(deliveryCharge, 1));
-            invoice.ProductsList.Add(new ProductsListItem(pipe, 20));
+            invoice.Products.Add(new ProductsListItem(deliveryCharge, 1));
+            invoice.Products.Add(new ProductsListItem(pipe, 20));
             InvoiceDatabase.Insert(invoice);
         }
 
@@ -101,7 +100,7 @@ namespace AmudhaApp.Server.Controllers
             try
             {
                 invoice.Id = Guid.NewGuid();
-                invoice.UpdatedAt = DateTimeOffset.Now;
+                invoice.CreatedAt = DateTimeOffset.Now;
                 await Task.FromResult(InvoiceDatabase.Insert(invoice));
                 return CreatedAtRoute("GetInvoice", new { id = invoice.Id }, invoice);
             }
@@ -122,7 +121,10 @@ namespace AmudhaApp.Server.Controllers
                 {
                     return new BadRequestResult();
                 }
-                invoice.UpdatedAt = DateTimeOffset.Now;
+                if(invoice.CreatedAt == default(DateTimeOffset))
+                {
+                    invoice.CreatedAt = DateTimeOffset.Now;
+                }
 
                 await Task.FromResult(InvoiceDatabase.Upsert(invoice));
                 return CreatedAtRoute("GetInvoice", new { id = invoice.Id }, invoice);
